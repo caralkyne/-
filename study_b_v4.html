@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>艺术图片欣赏任务（B组·第一部分）</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c); color: #fff; min-height: 100vh; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+.container { max-width: 960px; width: 100%; background-color: rgba(0, 0, 30, 0.86); border-radius: 16px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); padding: 30px; margin: 20px 0; backdrop-filter: blur(10px); overflow: hidden; position: relative; }
+.header { text-align: center; margin-bottom: 24px; }
+.header h1 { font-size: 2.5rem; margin-bottom: 16px; color: #ffcc00; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+.header h2 { font-size: 2rem; color: #ffcc00; }
+.screen { display: none; animation: fadeIn 0.35s ease-in; }
+.screen.active { display: block; }
+.screen-content { padding: 20px; text-align: center; }
+.btn { background: linear-gradient(to right, #ff8c00, #ffcc00); color: #000; border: none; padding: 16px 40px; font-size: 1.25rem; font-weight: bold; border-radius: 999px; cursor: pointer; margin: 18px 10px; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28); }
+.btn-secondary { background: linear-gradient(to right, #4b6cb7, #182848); color: #fff; }
+.btn-disabled { opacity: .55; cursor: not-allowed; pointer-events: none; }
+.instructions { background: rgba(255,255,255,.1); border-radius: 12px; padding: 22px; margin: 18px 0 26px; text-align: left; }
+.instructions h3 { color: #ffcc00; margin-bottom: 12px; text-align: center; }
+.instructions ul { padding-left: 24px; }
+.instructions li { margin-bottom: 10px; line-height: 1.7; }
+.image-container { width: 100%; max-width: 620px; height: 420px; margin: 24px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); background: #222; display: flex; align-items: center; justify-content: center; }
+.image-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+.placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #2c3e50, #4a6491); color: #bdbdbd; font-size: 1.15rem; }
+.progress-container { width: 100%; max-width: 620px; margin: 16px auto; background: rgba(255,255,255,.12); border-radius: 10px; height: 18px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(to right, #00b09b, #96c93d); width: 0%; transition: width .25s ease; }
+.hidden { display: none !important; }
+.btn-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 18px; margin-top: 24px; }
+.judgment-btn { min-width: 220px; padding: 20px 28px; font-size: 1.25rem; }
+.info-form { text-align: left; max-width: 420px; margin: 20px auto; font-size: 1.15rem; }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; margin-bottom: 8px; color: #ffcc00; }
+.form-group input, .form-group select { width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 8px; border: 2px solid #4b6cb7; background: rgba(0,0,0,.2); color: #fff; }
+.error-text { color: #ff6666; min-height: 24px; margin-top: 8px; text-align: center; }
+.notice-box { background: rgba(255, 215, 0, .12); border: 2px solid gold; border-radius: 12px; padding: 22px; margin: 24px 0; text-align: center; }
+.notice-box p { margin: 10px 0; line-height: 1.8; font-size: 1.15rem; }
+.status-text { margin-top: 10px; font-size: 1rem; opacity: .95; }
+.result-summary { font-size: 1.2rem; line-height: 1.9; }
+.code-box { font-size: 1.8rem; letter-spacing: 2px; font-weight: bold; color: #ffcc00; margin: 18px 0; padding: 16px; border: 2px dashed #ffcc00; border-radius: 12px; text-align: center; }
+.good { color: #9af59a; font-weight: bold; }
+.bad { color: #ff8b8b; font-weight: bold; }
+.helper { font-size: 0.98rem; opacity: .92; line-height: 1.7; }
+.test-image-single { width: 100%; max-width: 620px; height: 420px; margin: 24px auto; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35); background: #222; display: flex; align-items: center; justify-content: center; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</head>
+<body>
+<div class="container">
+  <div id="access-screen" class="screen active">
+    <div class="header"><h1>艺术图片欣赏任务（B组·第一部分）</h1></div>
+    <div class="screen-content">
+      <div class="instructions">
+        <h3>进入第一部分</h3>
+        <ul>
+          <li>请输入主试单独发送给你的访问码后进入任务。</li>
+          <li>本阶段完成后，本设备将不再提供重复观看入口。</li>
+          <li>请在安静环境下完整完成本任务。</li>
+        </ul>
+      </div>
+      <div class="info-form">
+        <div class="form-group"><label for="access-code-input">访问码</label><input type="password" id="access-code-input" placeholder="请输入访问码" autocomplete="off"></div>
+        <div id="access-error" class="error-text"></div>
+      </div>
+      <button id="access-submit-btn" class="btn">确认并进入</button>
+    </div>
+  </div>
+
+  <div id="completed-screen" class="screen">
+    <div class="header"><h1>艺术图片欣赏任务（B组·第一部分）</h1></div>
+    <div class="screen-content">
+      <div class="notice-box">
+        <p class="result-summary">本设备上的第一部分任务已完成。</p>
+        <p>为避免重复观看，本页面不再提供再次进入入口。</p>
+        <p>请按主试安排参加一周后的第二部分任务。</p>
+        <p class="helper">你上次完成本阶段时生成的阶段码如下，请妥善保存：</p>
+        <div id="completed-stage-code-box" class="code-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="info-screen" class="screen">
+    <div class="header"><h1>艺术图片欣赏任务（B组·第一部分）</h1></div>
+    <div class="screen-content">
+      <div class="instructions">
+        <h3>参与者信息</h3>
+        <ul>
+          <li>请填写你的基本信息后开始本阶段任务。</li>
+          <li>本阶段请认真欣赏每一张图片内容与细节。</li>
+          <li>一周后将进行第二部分任务。</li>
+          <li>注意力检测正确率未达到60%的视为不通过。</li>
+        </ul>
+      </div>
+      <div class="info-form">
+        <div class="form-group"><label for="subject-id-input">被试ID</label><input type="text" id="subject-id-input" placeholder="请输入三位数字，如001" maxlength="3" inputmode="numeric"></div>
+        <div class="form-group"><label for="name-input">姓名</label><input type="text" id="name-input" placeholder="请输入姓名"></div>
+        <div class="form-group"><label for="gender-select">性别</label><select id="gender-select"><option value="">请选择</option><option value="M">男 (M)</option><option value="F">女 (F)</option></select></div>
+        <div id="info-error" class="error-text"></div>
+      </div>
+      <button id="info-submit-btn" class="btn">确认并继续</button>
+    </div>
+  </div>
+
+  <div id="welcome-screen" class="screen">
+    <div class="header"><h1>艺术图片欣赏任务（B组·第一部分）</h1></div>
+    <div class="screen-content">
+      <div class="instructions">
+        <h3>第一部分说明</h3>
+        <ul>
+          <li>接下来你将看到一系列艺术图片，请认真欣赏图片内容与细节。</li>
+          <li>每张图片至少需要观看 5 秒后才能进入下一张。</li>
+          <li>过程中会穿插少量注意力检测题，请按要求作答。</li>
+          <li>一周后你还将参加第二部分任务，请保存好本次任务结束时显示的阶段码。</li>
+        </ul>
+      </div>
+      <button id="start-btn" class="btn">开始第一部分</button>
+    </div>
+  </div>
+
+  <div id="experiment-screen" class="screen">
+    <div class="header"><h2 id="task-instruction">图片欣赏中</h2></div>
+    <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="image-container" id="main-image-container"><div class="placeholder">图片加载中...</div></div>
+    <div class="btn-container" id="study-controls"><button id="next-btn" class="btn btn-disabled">下一张</button></div>
+    <div id="debug-status" class="status-text hidden">调试模式已开启：已取消 5 秒最短观看限制。</div>
+  </div>
+
+  <div id="probe-choice-screen" class="screen">
+    <div class="header"><h2>注意力检测</h2></div>
+    <div class="screen-content">
+      <p style="font-size: 1.5rem; margin-bottom: 30px;">请问刚才图片中的红色图形是？</p>
+      <div class="btn-container">
+        <button data-shape="circle" class="btn probe-btn">圆形</button>
+        <button data-shape="square" class="btn probe-btn">正方形</button>
+        <button data-shape="triangle" class="btn probe-btn">三角形</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="results-screen" class="screen">
+    <div class="header"><h1>第一部分已完成</h1></div>
+    <div class="screen-content">
+      <div class="notice-box">
+        <p class="result-summary">请保存下方阶段码，一周后的第二部分需要输入。</p>
+        <div id="stage-code-box" class="code-box"></div>
+        <p id="attention-summary" class="result-summary"></p>
+        <p class="helper">结果文件已自动下载。请不要重复观看本阶段内容。</p>
+        <p class="helper">阶段码用于将第一部分与第二部分准确对应，请截图或记录。</p>
+      </div>
+      <button id="copy-code-btn" class="btn">复制阶段码</button>
+      <button id="download-btn" class="btn btn-secondary">重新下载结果</button>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const ACCESS_CODE = 'B2026';
+  const COMPLETION_KEY = 'study_phase_completed_B_v3';
+  const STAGE_CODE_KEY = 'study_phase_stage_code_B_v3';
+  const GROUP_NAME = 'GroupB';
+  const HUMAN_FILES = ["30202.webp", "30227.webp", "30411.webp", "30207.webp", "30311.webp", "30402.webp", "30609.webp", "30502.webp", "30505.webp", "30401.webp", "30205.webp", "30210.webp", "30226.webp", "30412.webp", "30501.webp", "30307.webp", "30303.webp", "30413.webp", "30222.webp", "30605.webp", "30302.webp", "30408.webp", "30223.webp", "30215.webp", "30601.webp", "30610.webp", "30405.webp", "30604.webp", "30220.webp", "30221.webp"];
+  const AI_FILES = ["30410-a.webp", "30306-a.webp", "30603-a.webp", "30309-a.webp", "30225-a.webp", "30404-a.webp", "30407-a.webp", "30509-a.webp", "30224-a.webp", "30602-a.webp", "30607-a.webp", "30201-a.webp", "30418-a.webp", "30403-a.webp", "30203-a.webp", "30218-a.webp", "30406-a.webp", "30216-a.webp", "30304-a.webp", "30217-a.webp", "30209-a.webp", "30510-a.webp", "30204-a.webp", "30208-a.webp", "30506-a.webp", "30310-a.webp", "30611-a.webp", "30206-a.webp", "30606-a.webp", "30512-a.webp"];
+  const ATTENTION_PROBES = [{"fileName": "probe_circle_1.webp", "correctShape": "circle"}, {"fileName": "probe_circle_2.webp", "correctShape": "circle"}, {"fileName": "probe_square_1.webp", "correctShape": "square"}, {"fileName": "probe_square_2.webp", "correctShape": "square"}, {"fileName": "probe_triangle_1.webp", "correctShape": "triangle"}, {"fileName": "probe_triangle_2.webp", "correctShape": "triangle"}];
+  const MIN_VIEW_MS = 5000;
+  const CHEAT_CODE = '20040220';
+
+
+  const GROUP = 'B';
+  function showScreen(name) { Object.values(screens).forEach(s => s.classList.remove('active')); screens[name].classList.add('active'); }
+  function shuffleArray(array) { const a = [...array]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function xmur3(str) { for(var i=0,h=1779033703 ^ str.length;i<str.length;i++){ h=Math.imul(h ^ str.charCodeAt(i),3432918353); h = h << 13 | h >>> 19; } return function(){ h=Math.imul(h ^ h>>>16,2246822507); h=Math.imul(h ^ h>>>13,3266489909); return (h ^= h>>>16) >>> 0; }; }
+  function mulberry32(a) { return function() { var t = a += 0x6D2B79F5; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function seededShuffle(array, seedStr) { const seed = xmur3(seedStr)(); const rand = mulberry32(seed); const a = [...array]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+  function makeStimulusList(files, type, groupName) { return files.map(file => ({ id: file, fileName: file, imageType: type, url: `pictures/${groupName}/${type}/${file}` })); }
+  function pad(num, len) { return String(num).padStart(len, '0'); }
+  function checksumFor(group, seed6) { const base = (group.charCodeAt(0) - 64) * 1000000 + parseInt(seed6, 10); return pad(base % 97, 2); }
+  function buildStageCode(group, seed6) { return `${group}-${seed6}-${checksumFor(group, seed6)}`; }
+  function parseStageCode(code) { const m = /^([AB])-?(\d{6})-?(\d{2})$/.exec(code.trim().toUpperCase()); if (!m) return null; const group = m[1], seed6 = m[2], check = m[3]; if (checksumFor(group, seed6) !== check) return null; return { group, seed6, code: `${group}-${seed6}-${check}` }; }
+  function generateSeed6() { const n = Math.floor(Math.random() * 900000) + 100000; return String(n); }
+  function csvEscape(value) { if (value === undefined || value === null) return ''; const s = String(value); return (s.includes(',') || s.includes('\n') || s.includes('\"')) ? '\"' + s.replace(/\"/g, '\"\"') + '\"' : s; }
+  function convertToCSV(rows, headers) { const head = headers.join(','); const body = rows.map(r => headers.map(h => csvEscape(r[h])).join(',')); return [head, ...body].join('\n'); }
+  function downloadCSV(rows, headers, filename) { const csv = convertToCSV(rows, headers); const blob = new Blob(["﻿" + csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); const url = URL.createObjectURL(blob); link.href = url; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); URL.revokeObjectURL(url); }
+
+
+  const screens = {
+    access: document.getElementById('access-screen'),
+    completed: document.getElementById('completed-screen'),
+    info: document.getElementById('info-screen'),
+    welcome: document.getElementById('welcome-screen'),
+    experiment: document.getElementById('experiment-screen'),
+    probe: document.getElementById('probe-choice-screen'),
+    results: document.getElementById('results-screen')
+  };
+
+  const accessCodeInput = document.getElementById('access-code-input');
+  const accessSubmitBtn = document.getElementById('access-submit-btn');
+  const accessError = document.getElementById('access-error');
+  const subjectIdInput = document.getElementById('subject-id-input');
+  const nameInput = document.getElementById('name-input');
+  const genderSelect = document.getElementById('gender-select');
+  const infoError = document.getElementById('info-error');
+  const infoSubmitBtn = document.getElementById('info-submit-btn');
+  const startBtn = document.getElementById('start-btn');
+  const progressBar = document.getElementById('progress-bar');
+  const mainImageContainer = document.getElementById('main-image-container');
+  const nextBtn = document.getElementById('next-btn');
+  const stageCodeBox = document.getElementById('stage-code-box');
+  const attentionSummary = document.getElementById('attention-summary');
+  const copyCodeBtn = document.getElementById('copy-code-btn');
+  const downloadBtn = document.getElementById('download-btn');
+  const debugStatus = document.getElementById('debug-status');
+
+  let participantInfo = {};
+  let stageCode = '';
+  let studyTrials = [];
+  let currentTrialIndex = 0;
+  let allResults = [];
+  let currentDisplayStart = 0;
+  let currentItemReady = false;
+  let debugBypassMinTime = false;
+  let cheatBuffer = '';
+  let probeCorrect = 0;
+  let probeTotal = 0;
+  let currentProbePromptAt = null;
+
+  if (localStorage.getItem(COMPLETION_KEY) === '1') {
+    const savedStageCode = localStorage.getItem(STAGE_CODE_KEY) || '阶段码未找到';
+    const completedStageCodeBox = document.getElementById('completed-stage-code-box');
+    if (completedStageCodeBox) completedStageCodeBox.textContent = savedStageCode;
+    showScreen('completed');
+    return;
+  }
+
+  subjectIdInput.addEventListener('input', () => { subjectIdInput.value = subjectIdInput.value.replace(/\D/g, '').slice(0, 3); });
+
+  function checkAccessCode() {
+    if (accessCodeInput.value.trim() !== ACCESS_CODE) {
+      accessError.textContent = '访问码错误，请重新输入。';
+      accessCodeInput.value = '';
+      accessCodeInput.focus();
+      return;
+    }
+    accessError.textContent = '';
+    showScreen('info');
+  }
+
+  function createTrials(seed6) {
+    const humanStimuli = makeStimulusList(HUMAN_FILES, 'human', GROUP_NAME);
+    const aiStimuli = makeStimulusList(AI_FILES, 'ai', GROUP_NAME);
+    const studyHuman = seededShuffle(humanStimuli, `${GROUP}|${seed6}|human`).slice(0, 15).map(x => ({ ...x, trialType: 'study' }));
+    const studyAI = seededShuffle(aiStimuli, `${GROUP}|${seed6}|ai`).slice(0, 15).map(x => ({ ...x, trialType: 'study' }));
+    const probes = seededShuffle(ATTENTION_PROBES, `${GROUP}|${seed6}|probe`).map(p => ({ ...p, url: `pictures/probes/${p.fileName}`, trialType: 'probe' }));
+    return seededShuffle([...studyHuman, ...studyAI, ...probes], `${GROUP}|${seed6}|order`);
+  }
+
+  function displayImage(item, callback) {
+    mainImageContainer.innerHTML = '<div class="placeholder">图片加载中...</div>';
+    currentItemReady = false;
+    const img = new Image();
+    img.onload = () => {
+      mainImageContainer.innerHTML = '';
+      mainImageContainer.appendChild(img);
+      currentDisplayStart = performance.now();
+      currentItemReady = true;
+      if (debugBypassMinTime) nextBtn.classList.remove('btn-disabled');
+      if (callback) callback(false);
+    };
+    img.onerror = () => {
+      mainImageContainer.innerHTML = '<div class="placeholder" style="color:#ff6666;">图片加载失败</div>';
+      currentDisplayStart = performance.now();
+      currentItemReady = true;
+      nextBtn.classList.remove('btn-disabled');
+      if (callback) callback(true);
+    };
+    img.src = item.url;
+  }
+
+  function runNextTrial() {
+    if (currentTrialIndex >= studyTrials.length) { endStudyPhase(); return; }
+    const item = studyTrials[currentTrialIndex];
+    progressBar.style.width = `${((currentTrialIndex + 1) / studyTrials.length) * 100}%`;
+    nextBtn.classList.add('btn-disabled');
+    if (item.trialType === 'probe') {
+      displayImage(item, () => { if (debugBypassMinTime) nextBtn.classList.remove('btn-disabled'); else setTimeout(() => nextBtn.classList.remove('btn-disabled'), MIN_VIEW_MS); });
+    } else {
+      displayImage(item, () => { if (debugBypassMinTime) nextBtn.classList.remove('btn-disabled'); else setTimeout(() => nextBtn.classList.remove('btn-disabled'), MIN_VIEW_MS); });
+    }
+  }
+
+  function startStudy() {
+    currentTrialIndex = 0;
+    probeCorrect = 0;
+    probeTotal = 0;
+    allResults = [];
+    debugStatus.classList.toggle('hidden', !debugBypassMinTime);
+    showScreen('experiment');
+    runNextTrial();
+  }
+
+  function endStudyPhase() {
+    localStorage.setItem(COMPLETION_KEY, '1');
+    localStorage.setItem(STAGE_CODE_KEY, stageCode);
+    const acc = probeTotal === 0 ? 0 : probeCorrect / probeTotal;
+    const passed = acc >= 0.6;
+    attentionSummary.innerHTML = `注意力检测正确率：<span class="${passed ? 'good' : 'bad'}">${(acc * 100).toFixed(1)}%</span>（${passed ? '达到要求' : '未达到60%' }）`;
+    stageCodeBox.textContent = stageCode;
+    showScreen('results');
+    triggerDownload();
+  }
+
+  function triggerDownload() {
+    const headers = ['Group','StageCode','SubID','SubName','gender','phase','trial','imageId','imageType','userResponse','isCorrect','viewTimeMs','probeRT'];
+    const filename = `study_${GROUP}_${participantInfo.subjectId}_${participantInfo.name}_${stageCode.replace(/-/g, '')}.csv`;
+    downloadCSV(allResults, headers, filename);
+  }
+
+  document.querySelectorAll('.probe-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const currentItem = studyTrials[currentTrialIndex];
+      const response = e.currentTarget.dataset.shape;
+      const probeRT = currentProbePromptAt ? Math.round(performance.now() - currentProbePromptAt) : '';
+      const isCorrect = response === currentItem.correctShape;
+      probeTotal += 1;
+      if (isCorrect) probeCorrect += 1;
+      allResults.push({
+        Group: GROUP,
+        StageCode: stageCode,
+        SubID: participantInfo.subjectId,
+        SubName: participantInfo.name,
+        gender: participantInfo.gender,
+        phase: 'probe',
+        trial: currentTrialIndex + 1,
+        imageId: currentItem.fileName,
+        imageType: 'probe',
+        userResponse: response,
+        isCorrect: isCorrect ? 1 : 0,
+        viewTimeMs: currentItem.viewTimeMs || '',
+        probeRT
+      });
+      currentProbePromptAt = null;
+      currentTrialIndex += 1;
+      showScreen('experiment');
+      runNextTrial();
+    });
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (!currentItemReady) return;
+    const viewTime = Math.round(performance.now() - currentDisplayStart);
+    const item = studyTrials[currentTrialIndex];
+    if (!debugBypassMinTime && viewTime < MIN_VIEW_MS) return;
+    item.viewTimeMs = viewTime;
+    if (item.trialType === 'probe') {
+      showScreen('probe');
+      currentProbePromptAt = performance.now();
+    } else {
+      allResults.push({
+        Group: GROUP,
+        StageCode: stageCode,
+        SubID: participantInfo.subjectId,
+        SubName: participantInfo.name,
+        gender: participantInfo.gender,
+        phase: 'study',
+        trial: currentTrialIndex + 1,
+        imageId: item.fileName,
+        imageType: item.imageType,
+        userResponse: 'next',
+        isCorrect: '',
+        viewTimeMs: viewTime,
+        probeRT: ''
+      });
+      currentTrialIndex += 1;
+      runNextTrial();
+    }
+  });
+
+  function handleCheatKey(e) {
+    const tag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : '';
+    if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+    if (!/^\d$/.test(e.key)) return;
+    cheatBuffer = (cheatBuffer + e.key).slice(-CHEAT_CODE.length);
+    if (cheatBuffer === CHEAT_CODE) {
+      debugBypassMinTime = true;
+      debugStatus.classList.remove('hidden');
+      nextBtn.classList.remove('btn-disabled');
+      alert('已进入调试模式：取消 5 秒最短观看限制。');
+      cheatBuffer = '';
+    }
+  }
+
+  accessSubmitBtn.addEventListener('click', checkAccessCode);
+  accessCodeInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkAccessCode(); });
+
+  infoSubmitBtn.addEventListener('click', () => {
+    const subjectId = subjectIdInput.value.trim();
+    const name = nameInput.value.trim();
+    const gender = genderSelect.value;
+    if (!/^\d{3}$/.test(subjectId) || !name || !gender) {
+      infoError.textContent = '请填写所有信息，且被试ID必须为三位数字，如001。';
+      return;
+    }
+    infoError.textContent = '';
+    participantInfo = { subjectId, name, gender };
+    const seed6 = generateSeed6();
+    stageCode = buildStageCode(GROUP, seed6);
+    studyTrials = createTrials(seed6);
+    showScreen('welcome');
+  });
+
+  startBtn.addEventListener('click', startStudy);
+  copyCodeBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(stageCode); alert('阶段码已复制。'); }
+    catch(e) { alert('复制失败，请手动记录阶段码。'); }
+  });
+  downloadBtn.addEventListener('click', triggerDownload);
+  document.addEventListener('keydown', (e) => { if (screens.experiment.classList.contains('active')) handleCheatKey(e); });
+});
+</script>
+</body>
+</html>
